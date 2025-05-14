@@ -16,7 +16,7 @@ const UserForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleUpdateUser(formData); // ✅ Actualiza los datos personales en Redux
+        handleUpdateUser(formData); //  Actualiza los datos personales en Redux
     };
 
     return (
