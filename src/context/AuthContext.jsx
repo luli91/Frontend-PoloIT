@@ -10,62 +10,39 @@ export const AuthProvider = ({ children }) => {
     const dispatch = useDispatch();
 
     const handleLogin = async (email, password) => {
-        // Usuario de prueba con credenciales correctas
-        const fakeUser = {
-            persona_id: "12345",
-            nombre: "Carlos",
-            apellido: "Gómez",
-            contacto_email: "usuario@gmail.com", // Email válido de prueba
-            contacto_telefono: "123456789",
-            activo: true,
-            rol: "usuario",
-            fecha_creacion: "2024-05-01",
-            // ubicacion: {
-            //     domicilio: "Av. Siempre Viva 742",
-            //     altura: "742",
-            //     codigo_postal: "1000",
-            //     ciudad: "Buenos Aires",
-            //     provincia: "Buenos Aires",
-            //     pais: "Argentina"
-            // }
-        };
-    
-        const fakePassword = "password123"; // Contraseña válida de prueba
-        const fakeToken = "TOKEN_DE_PRUEBA";
-    
-        // Validar credenciales antes de iniciar sesión
-        if (email === fakeUser.contacto_email && password === fakePassword) {
-            dispatch(login({ user: fakeUser, token: fakeToken }));
-            return true; 
-        } else {
-            return false; 
-        }
-    };
-    
-    
-    const handleLogout = () => {
-        dispatch(logout());
+    // Usuario de prueba con credenciales correctas
+    const fakeUser = {
+        nombre: "Carlos",
+        apellido: "Gómez",
+        email: "usuario@gmail.com", 
+        telefono: "123456789",
+        rol: "usuario",
     };
 
+    const fakePassword = "password123"; 
+    const fakeToken = "TOKEN_DE_PRUEBA";
+
+    console.log("Datos ingresados:", email, password);
+
+    // Validar credenciales antes de iniciar sesión
+    if (email.trim() === fakeUser.email && password === fakePassword) {  //  Asegurar comparación exacta
+        dispatch(login({ user: fakeUser, token: fakeToken }));
+        return true; 
+    } else {
+        console.error("Error: Credenciales incorrectas");
+        return false; 
+    }
+};
+
+    
     const handleRegister = async (formData) => {
         // Simulación de usuario recién registrado
         const fakeNewUser = {
-            persona_id: "67890",
-            nombre: formData.nombre,
-            apellido: formData.apellido,
-            contacto_email: formData.contacto_email,
-            contacto_telefono: formData.contacto_telefono,
-            activo: true,
-            rol: "usuario",
-            fecha_creacion: new Date().toISOString(),
-            ubicacion: {
-                domicilio: "Calle Falsa 123",
-                altura: "123",
-                codigo_postal: "2000",
-                ciudad: "Rosario",
-                provincia: "Santa Fe",
-                pais: "Argentina"
-            }
+        nombre: formData.nombre,
+        email: formData.email,  
+        password: formData.password,
+        telefono: formData.telefono,  
+        rol: formData.rol,
         };
     
         const fakeToken = "TOKEN_DE_PRUEBA";
@@ -102,7 +79,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
     
-    
+    const handleLogout = () => {
+        dispatch(logout());
+    };
 
     return (
         <AuthContext.Provider value={{ user, token, handleLogin, handleLogout, handleRegister, handleUpdateLocation, handleUpdateUser }}>

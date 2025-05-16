@@ -1,13 +1,15 @@
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 const UserForm = () => {
     const { user, handleUpdateUser } = useAuth();
     const [formData, setFormData] = useState({
         nombre: user.nombre,
-        apellido: user.apellido,
-        contacto_email: user.contacto_email,
-        contacto_telefono: user.contacto_telefono
+        email: user.email,
+        telefono: user.telefono,
+        rol: user.rol,
+        password: ""
     });
 
     const handleChange = (e) => {
@@ -16,17 +18,26 @@ const UserForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleUpdateUser(formData); //  Actualiza los datos personales en Redux
+        handleUpdateUser(formData); 
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <h2>Editar Datos Personales</h2>
-            <input name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} />
-            <input name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} />
-            <input type="email" name="contacto_email" placeholder="Correo" value={formData.contacto_email} onChange={handleChange} />
-            <input type="text" name="contacto_telefono" placeholder="Teléfono" value={formData.contacto_telefono} onChange={handleChange} />
-            <button type="submit">Guardar cambios</button>
+            <TextField fullWidth label="Nombre" name="nombre" variant="outlined" margin="dense" value={formData.nombre} onChange={handleChange} />
+            <TextField fullWidth label="Correo" type="email" name="email" variant="outlined" margin="dense" value={formData.email} onChange={handleChange} />
+            <TextField fullWidth label="Teléfono" name="telefono" variant="outlined" margin="dense" value={formData.telefono} onChange={handleChange} />
+
+            <FormControl fullWidth margin="dense">
+                <InputLabel>Cambiar rol</InputLabel>
+                <Select name="rol" value={formData.rol} onChange={handleChange}>
+                    <MenuItem value="admin">Donador</MenuItem>
+                    <MenuItem value="usuario">Beneficiario</MenuItem>
+                </Select>
+            </FormControl>
+
+            <TextField fullWidth label="Nueva Contraseña" type="password" name="password" variant="outlined" margin="dense" value={formData.password} onChange={handleChange} />
+
+            <Button variant="contained" color="primary" fullWidth type="submit">Guardar cambios</Button>
         </form>
     );
 };

@@ -1,6 +1,7 @@
 import UserForm from "../components/UserForm";
 import LocationForm from "../components/LocationForm";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, Typography, Button } from "@mui/material";
 
 const EditProfilePage = () => {
     const navigate = useNavigate();
@@ -10,12 +11,16 @@ const EditProfilePage = () => {
     };
 
     return (
-        <div>
-            <h1>Editar Perfil</h1>
-            <UserForm />
-            <LocationForm />
-            <button onClick={handleBack}>Volver al Perfil</button>
-        </div>
+        <Card sx={{ maxWidth: 600, margin: "auto", mt: 5, padding: 3 }}>
+            <CardContent>
+                <Typography variant="h4" gutterBottom>Editar Perfil</Typography>
+                <UserForm />
+                <LocationForm />
+                <Button variant="contained" color="secondary" fullWidth onClick={handleBack}>
+                    Volver al Perfil
+                </Button>
+            </CardContent>
+        </Card>
     );
 };
 
