@@ -7,12 +7,14 @@ import ProfilePage from "../pages/ProfilePage";
 import PrivateRoute from "./PrivateRoute";
 import NotFound from "../pages/NotFound";
 import EditProfilePage from "../pages/EditProfilePage";
+import ContactUs from "../pages/ContactUs";
 
 const AppRouter = () => {
     return (
             <Routes>
                 <Route path="/" element={<App/>}> 
                     <Route index element={<HomePage/>} />
+                    <Route path="/sobre-nosotros" element={<ContactUs/>} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage/>} />
                     <Route path="/perfil" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />

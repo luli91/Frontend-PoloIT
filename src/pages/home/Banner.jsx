@@ -30,7 +30,7 @@ const Banner = () => {
                 sx={{
                     fontWeight: "bold",
                     maxWidth: { xs: "90%", md: "70%" },
-                    fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" }, 
+                    fontSize: { xs: "1.5rem", sm: "2.2rem", md: "3rem", lg: "3.5rem" } 
                 }}
             >
             ¡Dale una nueva vida a lo que no usás!
@@ -48,10 +48,10 @@ const Banner = () => {
                         borderWidth: 2,
                         borderColor: "black",
                         color: "black",
-                        fontSize: { xs: "1rem", sm: "1.2rem" },
-                        px: { xs: 2, sm: 4 }, 
-                        py: 1,
-                        width: { xs: "80%", sm: "auto" }, 
+                        fontSize: { xs: "0.9rem", sm: "1.2rem", md: "1.4rem" },
+                        px: { xs: 1, sm: 3, md: 4 } ,
+                        py: { xs: 0.5, sm: 1, md: 1.2 },
+                        width: { xs: "100%", sm: "auto" }, 
                         transition: "0.3s",
                         "&:hover": {
                             backgroundColor: "black",
@@ -68,10 +68,10 @@ const Banner = () => {
                         borderWidth: 2,
                         borderColor: "black",
                         color: "black",
-                        fontSize: { xs: "1rem", sm: "1.2rem" },
-                        px: { xs: 2, sm: 4 },
-                        py: 1,
-                        width: { xs: "80%", sm: "auto" },
+                        fontSize: { xs: "0.9rem", sm: "1.2rem", md: "1.4rem" },
+                        px: { xs: 1, sm: 3, md: 4 } ,
+                        py: { xs: 0.5, sm: 1, md: 1.2 },
+                        width: { xs: "100%", sm: "auto" },
                         transition: "0.3s",
                         "&:hover": {
                             backgroundColor: "black",
@@ -84,8 +84,8 @@ const Banner = () => {
                 </Button>
             </Stack>
         </Box>
+        
     );
 };
 
 export default Banner;
-

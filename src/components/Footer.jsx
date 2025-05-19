@@ -1,40 +1,59 @@
-import { Box, Typography, Grid, Link } from "@mui/material";
+import React from "react";
+import { Container, Box, Grid, IconButton, Divider, List, ListItem, ListItemButton, Typography, TextField, Button } from "@mui/material";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import SendIcon from "@mui/icons-material/Send";
 
-const Footer = () => {
+
+export default function Footer() {
     return (
-        <Box sx={{ bgcolor: "#222", color: "white", padding: "20px 0", textAlign: "center" }}>
-            <Grid container columnSpacing={2} justifyContent="center">
-                {/* Sección de enlaces */}
-                <Grid gridColumn="span 4">
-                    <Typography variant="h6">Enlaces</Typography>
-                    <Link href="/about" color="inherit" underline="none">Sobre nosotros</Link><br />
-                    <Link href="/donaciones" color="inherit" underline="none">Donaciones</Link><br />
-                    <Link href="/contacto" color="inherit" underline="none">Contacto</Link>
-                </Grid>
+        <Container maxWidth="lg" sx={{ bgcolor: "#799351", color: "#333", py: 4 }}>
+            {/* Redes sociales */}
+            <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mb: 2 }}>
+                <IconButton color="inherit"><InstagramIcon /></IconButton>
+                <IconButton color="inherit"><LinkedInIcon /></IconButton>
+                <IconButton color="inherit"><TwitterIcon /></IconButton>
+            </Box>
 
-                {/* Sección de redes sociales */}
-                <Grid gridColumn="span 4">
-                    <Typography variant="h6">Síguenos</Typography>
-                    <Link href="https://facebook.com" color="inherit" underline="none">Facebook</Link><br />
-                    <Link href="https://instagram.com" color="inherit" underline="none">Instagram</Link><br />
-                    <Link href="https://twitter.com" color="inherit" underline="none">Twitter</Link>
-                </Grid>
+            <Divider sx={{ bgcolor: "grey.700", mb: 3 }} />
 
+            {/* Estructura principal del footer */}
+            <Grid container spacing={4} sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" } }}>
+                {/* Sección de enlaces de navegación */}
+                <Box>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2}}>
+                        Navegación
+                    </Typography>
+                    <List>
+                        <ListItem><ListItemButton component="a" href="/">Inicio</ListItemButton></ListItem>
+                        <ListItem><ListItemButton component="a" href="/donaciones">Donaciones</ListItemButton></ListItem>
+                        <ListItem><ListItemButton component="a" href="/sobre-nosotros">Sobre Nosotros</ListItemButton></ListItem>
+                        <ListItem><ListItemButton component="a" href="/preguntas-frecuentes">Preguntas Frecuentes</ListItemButton></ListItem>
+                        <ListItem><ListItemButton component="a" href="/contacto">Contacto</ListItemButton></ListItem>
+                    </List>
+                </Box>
                 {/* Sección de contacto */}
-                <Grid gridColumn="span 4">
-                    <Typography variant="h6">Contacto</Typography>
-                    <Typography variant="body2">Email: contacto@redonar.com</Typography>
-                    <Typography variant="body2">Tel: +54 11 1234-5678</Typography>
-                </Grid>
+                <Box>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2}}>
+                        Contacto
+                    </Typography>
+                    <Typography variant="body2" >
+                        Si quieres recibir novedades, suscríbete a nuestro boletín.
+                    </Typography>
+                    <Box sx={{ display: "flex", mt: 2 }}>
+                        <TextField variant="filled" placeholder="Tu correo" fullWidth sx={{ bgcolor: "white", borderRadius: 1 }} />
+                        <Button variant="contained" sx={{ ml: 1, bgcolor: "#333" }}>
+                            <SendIcon />
+                        </Button>
+                    </Box>
+                </Box>
             </Grid>
 
-            {/* Derechos de autor */}
-            <Typography variant="body2" sx={{ mt: 2 }}>
-                © 2025 ReDonar - Todos los derechos reservados
-            </Typography>
-        </Box>
+            {/* Texto de derechos reservados */}
+            <Box sx={{ textAlign: "center", mt: 3 }}>
+                <Typography variant="caption">© 2025 PoloIT. Todos los derechos reservados.</Typography>
+            </Box>
+        </Container>
     );
-};
-
-export default Footer;
-
+}

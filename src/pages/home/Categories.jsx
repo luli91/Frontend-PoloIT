@@ -1,5 +1,4 @@
 import { Box, Typography, Grid, Card, CardContent, CardMedia } from "@mui/material";
-import { motion } from "framer-motion";
 
 const categories = [
     { title: "Ropa", image: "/images/ReDona_ropa.jpg" },
@@ -14,28 +13,21 @@ const Categories = () => {
     return (
         <Box sx={{ mt: 6, textAlign: "center", padding: "40px" }}>
             {/* Título de la sección */}
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4,fontSize: { xs: "1.2rem", sm: "1.5rem", md: "2rem" } }}>
                 Explora las categorías de donaciones
             </Typography>
 
-            {/* Contenedor de tarjetas con efecto animado */}
-            <Grid container spacing={4} justifyContent="center">
+            {/* Contenedor de tarjetas */}
+            <Grid container spacing={4} sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" } }}>
                 {categories.map((category, index) => (
-                    <Grid columns={{ xs: 12, sm: 6, md: 4 }} key={index} sx={{ display: "flex", justifyContent: "center" }}>
-                        <motion.div
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.2 }}
-                            style={{ display: "flex", width: "100%", justifyContent: "center" }}
-                        >
-                            <Card sx={{ width: "280px", height: "280px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                                <CardMedia component="img" height="200" image={category.image} alt={category.title} />
-                                <CardContent sx={{ textAlign: "center" }}>
-                                    <Typography variant="h6">{category.title}</Typography>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </Grid>
+                    <Card key={index} sx={{ width: "100%", maxWidth: "280px", height: "auto", margin: "auto", display: "flex", flexDirection: "column", justifyContent: "space-between", margin: "auto" }}>
+                        <CardMedia component="img" height="200" image={category.image} alt={category.title} />
+                        <CardContent sx={{ textAlign: "center" }}>
+                            <Typography variant="h6" sx={{ fontSize: { xs: "0.9rem", sm: "1rem", md: "1.2rem" }, fontWeight: "bold" }}>
+                            {category.title}
+                            </Typography>
+                        </CardContent>
+                    </Card>
                 ))}
             </Grid>
         </Box>
@@ -43,4 +35,3 @@ const Categories = () => {
 };
 
 export default Categories;
-
