@@ -28,8 +28,12 @@ const LoginPage = () => {
         if (validateForm()) {
             const success = await handleLogin(email, password);
             if (success) {
-                navigate("/perfil");
-            } else {
+            console.log("Redirigiendo al perfil...");
+            setTimeout(() => {
+            navigate("/perfil"); 
+            }, 500);
+        }
+        else {
                 setError("Correo o contraseña incorrectos");
             }
         }

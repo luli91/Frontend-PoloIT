@@ -29,7 +29,7 @@ export default DonationMap;
 
 //     useEffect(() => {
 //         // Llamada al backend para obtener las ubicaciones de las donaciones
-//         fetch("https://tu-api.com/donaciones")
+//         ("https://tu-api.com/donaciones")
 //             .then((response) => response.json())
 //             .then((data) => setLocations(data))
 //             .catch((error) => console.error("Error al obtener ubicaciones:", error));

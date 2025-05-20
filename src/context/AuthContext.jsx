@@ -1,92 +1,170 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { login, logout } from "../redux/slices/authSlice";
+import urlbackend from "../config";
+
 
 export const AuthContext = createContext();
+
 
 export const AuthProvider = ({ children }) => {
     const user = useSelector((state) => state.auth.user);
     const token = useSelector((state) => state.auth.token);
+    // const role = useSelector((state) => state.auth.role);
+    
     const dispatch = useDispatch();
+    useEffect(() => {
+}, []);
 
+    //handleLogin envía credenciales y recibe un access_token del backend. Guarda el token en localStorage y luego llama a getUserData para obtener los datos del usuario.
     const handleLogin = async (email, password) => {
-    // Usuario de prueba con credenciales correctas
-    const fakeUser = {
-        nombre: "Carlos",
-        apellido: "Gómez",
-        email: "usuario@gmail.com", 
-        telefono: "123456789",
-        rol: "usuario",
-    };
+        try {
+            const response = await fetch(`${urlbackend}/usuarios/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
 
-    const fakePassword = "password123"; 
-    const fakeToken = "TOKEN_DE_PRUEBA";
+            console.log(response.status);
+            if (!response.ok) {
+                console.error("Error: Credenciales incorrectas");
+                return false;
+            }
 
-    console.log("Datos ingresados:", email, password);
+            const data = await response.json();
+            localStorage.setItem("token", data.access_token); //  Guarda el token
+            
+            // Ahora obtenemos los datos del usuario
+            await getUserData();
 
-    // Validar credenciales antes de iniciar sesión
-    if (email.trim() === fakeUser.email && password === fakePassword) {  //  Asegurar comparación exacta
-        dispatch(login({ user: fakeUser, token: fakeToken }));
-        return true; 
-    } else {
-        console.error("Error: Credenciales incorrectas");
-        return false; 
-    }
-};
-
-    
-    const handleRegister = async (formData) => {
-        // Simulación de usuario recién registrado
-        const fakeNewUser = {
-        nombre: formData.nombre,
-        email: formData.email,  
-        password: formData.password,
-        telefono: formData.telefono,  
-        rol: formData.rol,
+            return true;
+            } catch (error) {
+                console.error("Error en la autenticación:", error);
+            return false;
+            }
         };
-    
-        const fakeToken = "TOKEN_DE_PRUEBA";
-    
-        dispatch(login({ user: fakeNewUser, token: fakeToken }));
-    };
-    
-    const handleUpdateLocation = (formData) => {
-        try {
-            // Simulación de actualización en Redux
-            const updatedUser = {
-                ...user,
-                ubicacion: formData, // Actualiza solo la ubicación
-            };
-    
-            dispatch(login({ user: updatedUser, token })); // Actualiza Redux sin llamar a un backend
-            console.log("Ubicación actualizada:", updatedUser.ubicacion);
+
+        // getUserData obtiene los datos del usuario y los guarda en Redux.
+        const getUserData = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No hay token disponible");
+
+        const response = await fetch(`${urlbackend}/usuarios/me`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al obtener usuario");
+        }
+
+        const userData = await response.json();
+        dispatch(login({ user: userData, token })); // Guarda el usuario en Redux
+
         } catch (error) {
-            console.error("Error al actualizar ubicación:", error);
+            console.error("Error obteniendo datos del usuario:", error);
         }
     };
 
-    const handleUpdateUser = (formData) => {
+        const handleRegister = async (formData) => {
         try {
-            const updatedUser = {
-                ...user,
-                ...formData, 
-            };
-    
-            dispatch(login({ user: updatedUser, token }));
-            console.log("Datos personales actualizados:", updatedUser);
+            const response = await fetch(`${urlbackend}/usuarios/registro`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al registrar usuario");
+            }
+
+            const userData = await response.json();
+            console.log("Usuario registrado con éxito:", userData);
+
+            navigate("/login"); 
         } catch (error) {
-            console.error("Error al actualizar datos personales:", error);
+        console.error("Error en el registro:", error);
+    }
+    };
+
+        const getUsersList = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                    if (!token) throw new Error("No hay token disponible");
+
+                const response = await fetch(`${urlbackend}/usuarios/`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!response.ok) {
+                throw new Error("Error al obtener usuarios");
+            }
+        const users = await response.json();
+            dispatch(setUsers(users)); //  Guardar usuarios en Redux
+        } catch (error) {
+            console.error("Error obteniendo usuarios:", error);
         }
     };
-    
-    const handleLogout = () => {
-        dispatch(logout());
+
+        const deleteUser = async (usuarioId) => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) throw new Error("No hay token disponible");
+
+        const response = await fetch(`${urlbackend}/usuarios/${usuarioId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al eliminar usuario");
+        }
+
+        console.log("Usuario eliminado con éxito");
+        dispatch(removeUser(usuarioId)); //  Eliminar usuario de Redux
+        } catch (error) {
+            console.error("Error eliminando usuario:", error);
+        }
     };
+
+        const getUserById = async (usuarioId) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No hay token disponible");
+
+        const response = await fetch(`${urlbackend}/usuarios/${usuarioId}`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error("Usuario no encontrado");
+        }
+
+        const userData = await response.json();
+        console.log("Datos del usuario obtenido:", userData);
+        return userData; //  Devuelve los datos del usuario
+
+    } catch (error) {
+        console.error("Error obteniendo usuario por ID:", error);
+        return null;
+    }
+    };
+
+        const handleLogout = () => {
+            dispatch(logout()); //Borra usuario y token en Redux
+        localStorage.removeItem("token"); 
+        localStorage.removeItem("user"); // También elimina el usuario guardado
+    };
+
 
     return (
-        <AuthContext.Provider value={{ user, token, handleLogin, handleLogout, handleRegister, handleUpdateLocation, handleUpdateUser }}>
-            {children}
-        </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, token, handleLogin, handleLogout, handleRegister, getUsersList, getUserById, deleteUser }}>
+        {children}
+    </AuthContext.Provider>
     );
 };
 

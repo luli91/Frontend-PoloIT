@@ -1,11 +1,11 @@
 import { Container } from "@mui/material";
 import Banner from "./Banner";
-import Categories from "./Categories";
-import Testimonial from "./Testimonials";
-import AboutUs from "./AboutUs"
-import FAQ from "./FAQ"
-import CallToAction from "./CallToAction";
-import DonationMap from "./DonationMap";
+import Categories from "../home/Categories";
+import Testimonial from "../home/Testimonials";
+import AboutUs from "../home/AboutUs"
+import FAQ from "../home/FAQ"
+import CallToAction from "../home/CallToAction";
+import DonationMap from "../home/DonationMap";
 
 const HomePage = () => {
     return (

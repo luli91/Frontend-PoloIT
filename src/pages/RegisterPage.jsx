@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, TextField, Button, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Card, CardContent, Typography, TextField, Button, Box, FormControl, InputLabel, Select, MenuItem, CircularProgress } from "@mui/material";
 
 const RegisterPage = () => {
     const { handleRegister } = useAuth();
@@ -11,19 +11,33 @@ const RegisterPage = () => {
         email: "",
         password: "",
         telefono: "",
-        rol: "usuario", 
+        rol: "usuario",
+        direccion: "", 
+        codigo_postal: "", 
+        ciudad: "", 
+        provincia: "", 
     });
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false); //  Estado de carga
 
+    // Validación mejorada
     const validateForm = () => {
         let tempErrors = {};
         if (!formData.nombre.trim()) tempErrors.nombre = "El nombre es obligatorio";
-        if (!formData.email.includes("@")) tempErrors.email = "Correo no válido";
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) tempErrors.email = "Correo no válido";
+
         if (formData.password.length < 6) tempErrors.password = "La contraseña debe tener al menos 6 caracteres";
         if (!["usuario", "admin"].includes(formData.rol)) {
             tempErrors.rol = "El rol debe ser 'usuario' o 'admin'";
         }
+        if (!formData.direccion.trim()) tempErrors.direccion = "La dirección es obligatoria";
+        if (!formData.codigo_postal.trim()) tempErrors.codigo_postal = "El código postal es obligatorio";
+        if (!formData.ciudad.trim()) tempErrors.ciudad = "La ciudad es obligatoria";
+        if (!formData.provincia.trim()) tempErrors.provincia = "La provincia es obligatoria";
+
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -35,11 +49,19 @@ const RegisterPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
+            setLoading(true); // Activar carga
             try {
-                await handleRegister(formData);
-                navigate("/perfil");
+                const response = await handleRegister(formData);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    setErrors({ backend: errorData.detail }); //  Muestra error del backend en pantalla
+                } else {
+                    navigate("/perfil");
+                }
             } catch (error) {
-                console.error("Error en el registro:", error);
+                setErrors({ backend: "Error en el servidor, intenta más tarde" });
+            } finally {
+                setLoading(false); // Desactivar carga
             }
         }
     };
@@ -53,7 +75,11 @@ const RegisterPage = () => {
                     <TextField fullWidth label="Correo" type="email" name="email" variant="outlined" margin="normal" value={formData.email} onChange={handleChange} error={!!errors.email} helperText={errors.email} />
                     <TextField fullWidth label="Contraseña" type="password" name="password" variant="outlined" margin="normal" value={formData.password} onChange={handleChange} error={!!errors.password} helperText={errors.password} />
                     <TextField fullWidth label="Teléfono" name="telefono" variant="outlined" margin="normal" value={formData.telefono} onChange={handleChange} />
-                    
+                    <TextField fullWidth label="Dirección" name="direccion" variant="outlined" margin="normal" value={formData.direccion} onChange={handleChange} />
+                    <TextField fullWidth label="Código Postal" name="codigo_postal" variant="outlined" margin="normal" value={formData.codigo_postal} onChange={handleChange} />
+                    <TextField fullWidth label="Ciudad" name="ciudad" variant="outlined" margin="normal" value={formData.ciudad} onChange={handleChange} />
+                    <TextField fullWidth label="Provincia" name="provincia" variant="outlined" margin="normal" value={formData.provincia} onChange={handleChange} />
+
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Selecciona tu rol</InputLabel>
                         <Select name="rol" value={formData.rol} onChange={handleChange}>
@@ -62,8 +88,12 @@ const RegisterPage = () => {
                         </Select>
                     </FormControl>
 
+                    {errors.backend && <Typography color="error">{errors.backend}</Typography>}
+
                     <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" color="primary" fullWidth type="submit">Registrarse</Button>
+                        <Button variant="contained" color="primary" fullWidth type="submit" disabled={loading}>
+                            {loading ? <CircularProgress size={24} color="inherit" /> : "Registrarse"} {/* ✅ Loader */}
+                        </Button>
                     </Box>
                 </form>
             </CardContent>
@@ -72,4 +102,3 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
-
