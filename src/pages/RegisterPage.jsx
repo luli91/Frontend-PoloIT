@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import ProvinciaSelect from '../components/ProvinciaSelect.jsx';
 import { Card, CardContent, Typography, TextField, Button, Box, Alert, CircularProgress } from '@mui/material';
 
 const RegisterPage = () => {
@@ -169,16 +170,11 @@ const RegisterPage = () => {
                             required
                         />
 
-                        <TextField
-                            fullWidth
-                            label="Provincia"
-                            name="provincia"
+                        <ProvinciaSelect
                             value={formData.provincia}
                             onChange={handleChange}
                             error={!!errors.provincia}
                             helperText={errors.provincia}
-                            margin="normal"
-                            required
                         />
 
                         <Button
