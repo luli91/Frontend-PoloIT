@@ -1,103 +1,199 @@
-import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, TextField, Button, Box, FormControl, InputLabel, Select, MenuItem, CircularProgress } from "@mui/material";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import { Card, CardContent, Typography, TextField, Button, Box, Alert, CircularProgress } from '@mui/material';
 
 const RegisterPage = () => {
-    const { handleRegister } = useAuth();
     const navigate = useNavigate();
+    const { handleRegister } = useAuth();
     const [formData, setFormData] = useState({
-        nombre: "", 
-        email: "",
-        password: "",
-        telefono: "",
-        rol: "usuario",
-        direccion: "", 
-        codigo_postal: "", 
-        ciudad: "", 
-        provincia: "", 
+        nombre: '',
+        email: '',
+        password: '',
+        telefono: '',
+        direccion: '',
+        codigo_postal: '',
+        ciudad: '',
+        provincia: '',
+        rol: 'usuario'
     });
-
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false); //  Estado de carga
+    const [loading, setLoading] = useState(false);
 
-    // Validación mejorada
     const validateForm = () => {
-        let tempErrors = {};
-        if (!formData.nombre.trim()) tempErrors.nombre = "El nombre es obligatorio";
+        const newErrors = {};
+        if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio';
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) tempErrors.email = "Correo no válido";
+        if (!emailRegex.test(formData.email)) newErrors.email = 'Email no válido';
 
-        if (formData.password.length < 6) tempErrors.password = "La contraseña debe tener al menos 6 caracteres";
-        if (!["usuario", "admin"].includes(formData.rol)) {
-            tempErrors.rol = "El rol debe ser 'usuario' o 'admin'";
+        if (formData.password.length < 6) {
+            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         }
-        if (!formData.direccion.trim()) tempErrors.direccion = "La dirección es obligatoria";
-        if (!formData.codigo_postal.trim()) tempErrors.codigo_postal = "El código postal es obligatorio";
-        if (!formData.ciudad.trim()) tempErrors.ciudad = "La ciudad es obligatoria";
-        if (!formData.provincia.trim()) tempErrors.provincia = "La provincia es obligatoria";
 
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+        if (!formData.direccion.trim()) newErrors.direccion = 'La dirección es obligatoria';
+        if (!formData.codigo_postal.trim()) newErrors.codigo_postal = 'El código postal es obligatorio';
+        if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es obligatoria';
+        if (!formData.provincia.trim()) newErrors.provincia = 'La provincia es obligatoria';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            setLoading(true); // Activar carga
+            setLoading(true);
             try {
-                const response = await handleRegister(formData);
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    setErrors({ backend: errorData.detail }); //  Muestra error del backend en pantalla
+                const result = await handleRegister(formData);
+                if (result.ok) {
+                    // Mostrar mensaje de éxito
+                    setErrors({});
+                    navigate('/login', {
+                        state: {
+                            successMessage: "Usuario registrado exitosamente. Por favor, inicie sesión."
+                        }
+                    });
                 } else {
-                    navigate("/perfil");
+                    setErrors({ backend: result.error });
                 }
             } catch (error) {
-                setErrors({ backend: "Error en el servidor, intenta más tarde" });
+                setErrors({ backend: 'Error en el servidor, intenta más tarde' });
             } finally {
-                setLoading(false); // Desactivar carga
+                setLoading(false);
             }
         }
     };
-
     return (
-        <Card sx={{ maxWidth: 400, margin: "auto", mt: 5, padding: 3 }}>
-            <CardContent>
-                <Typography variant="h5" gutterBottom>Registro de Usuario</Typography>
-                <form onSubmit={handleSubmit}>
-                    <TextField fullWidth label="Nombre" name="nombre" variant="outlined" margin="normal" value={formData.nombre} onChange={handleChange} error={!!errors.nombre} helperText={errors.nombre} />
-                    <TextField fullWidth label="Correo" type="email" name="email" variant="outlined" margin="normal" value={formData.email} onChange={handleChange} error={!!errors.email} helperText={errors.email} />
-                    <TextField fullWidth label="Contraseña" type="password" name="password" variant="outlined" margin="normal" value={formData.password} onChange={handleChange} error={!!errors.password} helperText={errors.password} />
-                    <TextField fullWidth label="Teléfono" name="telefono" variant="outlined" margin="normal" value={formData.telefono} onChange={handleChange} />
-                    <TextField fullWidth label="Dirección" name="direccion" variant="outlined" margin="normal" value={formData.direccion} onChange={handleChange} />
-                    <TextField fullWidth label="Código Postal" name="codigo_postal" variant="outlined" margin="normal" value={formData.codigo_postal} onChange={handleChange} />
-                    <TextField fullWidth label="Ciudad" name="ciudad" variant="outlined" margin="normal" value={formData.ciudad} onChange={handleChange} />
-                    <TextField fullWidth label="Provincia" name="provincia" variant="outlined" margin="normal" value={formData.provincia} onChange={handleChange} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+            <Card sx={{ maxWidth: 600, width: '100%', m: 2 }}>
+                <CardContent sx={{ p: 3 }}>
+                    <Typography variant="h5" component="h1" gutterBottom textAlign="center">
+                        Registro de Usuario
+                    </Typography>
 
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>Selecciona tu rol</InputLabel>
-                        <Select name="rol" value={formData.rol} onChange={handleChange}>
-                            <MenuItem value="admin">Donador</MenuItem>
-                            <MenuItem value="usuario">Beneficiario</MenuItem>
-                        </Select>
-                    </FormControl>
+                    {errors.backend && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {errors.backend}
+                        </Alert>
+                    )}
 
-                    {errors.backend && <Typography color="error">{errors.backend}</Typography>}
+                    <form onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
+                            label="Nombre completo"
+                            name="nombre"
+                            value={formData.nombre}
+                            onChange={handleChange}
+                            error={!!errors.nombre}
+                            helperText={errors.nombre}
+                            margin="normal"
+                            required
+                        />
 
-                    <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" color="primary" fullWidth type="submit" disabled={loading}>
-                            {loading ? <CircularProgress size={24} color="inherit" /> : "Registrarse"} {/* ✅ Loader */}
+                        <TextField
+                            fullWidth
+                            label="Correo electrónico"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            error={!!errors.email}
+                            helperText={errors.email}
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Contraseña"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Teléfono"
+                            name="telefono"
+                            value={formData.telefono}
+                            onChange={handleChange}
+                            margin="normal"
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Dirección"
+                            name="direccion"
+                            value={formData.direccion}
+                            onChange={handleChange}
+                            error={!!errors.direccion}
+                            helperText={errors.direccion}
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Código Postal"
+                            name="codigo_postal"
+                            value={formData.codigo_postal}
+                            onChange={handleChange}
+                            error={!!errors.codigo_postal}
+                            helperText={errors.codigo_postal}
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Ciudad"
+                            name="ciudad"
+                            value={formData.ciudad}
+                            onChange={handleChange}
+                            error={!!errors.ciudad}
+                            helperText={errors.ciudad}
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Provincia"
+                            name="provincia"
+                            value={formData.provincia}
+                            onChange={handleChange}
+                            error={!!errors.provincia}
+                            helperText={errors.provincia}
+                            margin="normal"
+                            required
+                        />
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            disabled={loading}
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            {loading ? <CircularProgress size={24} /> : 'Registrarse'}
                         </Button>
-                    </Box>
-                </form>
-            </CardContent>
-        </Card>
+                    </form>
+                </CardContent>
+            </Card>
+        </Box>
     );
 };
 
