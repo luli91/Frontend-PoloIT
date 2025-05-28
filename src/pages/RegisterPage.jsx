@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../redux/slices/authSlice';
 import ProvinciaSelect from '../components/ProvinciaSelect.jsx';
 import { Card, CardContent, Typography, TextField, Button, Box, Alert, CircularProgress } from '@mui/material';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
-    const { handleRegister } = useAuth();
+    const dispatch = useDispatch();
+    const { loading, error, user } = useSelector((state) => state.auth);
+
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
@@ -18,20 +21,15 @@ const RegisterPage = () => {
         provincia: '',
         rol: 'usuario'
     });
+
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
 
     const validateForm = () => {
         const newErrors = {};
         if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio';
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) newErrors.email = 'Email no válido';
-
-        if (formData.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-        }
-
+        if (formData.password.length < 6) newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         if (!formData.direccion.trim()) newErrors.direccion = 'La dirección es obligatoria';
         if (!formData.codigo_postal.trim()) newErrors.codigo_postal = 'El código postal es obligatorio';
         if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es obligatoria';
@@ -48,30 +46,17 @@ const RegisterPage = () => {
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if (validateForm()) {
-            setLoading(true);
-            try {
-                const result = await handleRegister(formData);
-                if (result.ok) {
-                    // Mostrar mensaje de éxito
-                    setErrors({});
-                    navigate('/login', {
-                        state: {
-                            successMessage: "Usuario registrado exitosamente. Por favor, inicie sesión."
-                        }
-                    });
-                } else {
-                    setErrors({ backend: result.error });
-                }
-            } catch (error) {
-                setErrors({ backend: 'Error en el servidor, intenta más tarde' });
-            } finally {
-                setLoading(false);
-            }
-        }
+        if (validateForm()) dispatch(registerUser(formData));
     };
+
+    useEffect(() => {
+        if (user) {
+            navigate('/perfil');
+        }
+    }, [user, navigate]);
+    
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
             <Card sx={{ maxWidth: 600, width: '100%', m: 2 }}>

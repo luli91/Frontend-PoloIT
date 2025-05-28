@@ -1,12 +1,13 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const AdminRoute = ({ children }) => {
-    const { user } = useAuth();
+    const user = useSelector(state => state.auth.user);
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const userData = user || storedUser;
 
-    //  Verificación correcta del rol (asegurando que `user` existe)
-    if (!user || !user.rol || user.rol !== "admin") {
-        console.warn("Acceso denegado. Redirigiendo al login...");
+    if (!userData || userData.rol !== "admin") {
+        console.warn("🔒 Acceso denegado. Rol requerido: admin.");
         return <Navigate to="/login" />;
     }
 
@@ -14,3 +15,4 @@ const AdminRoute = ({ children }) => {
 };
 
 export default AdminRoute;
+

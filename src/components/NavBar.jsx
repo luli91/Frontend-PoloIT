@@ -1,6 +1,6 @@
 import React from "react";
+import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,14 +13,21 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../public/ReDoná_logo.png";
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/slices/authSlice';
 
 const NavBar = () => {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const { user, logout } = useAuth();
+    const [anchorElNav, setAnchorElNav] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const user = useSelector(state => state.auth.user);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { handleLogout } = useAuth();
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+    };
+
 
     return (
         <AppBar position="static">
@@ -58,7 +65,11 @@ const NavBar = () => {
                             >
                                 <MenuItem onClick={() => navigate("/perfil")}>Perfil</MenuItem>
                                 <MenuItem onClick={() => navigate("/mis-donaciones")}>Mis Donaciones</MenuItem>
-                                <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
+                                {user ? (
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            ) : (
+                <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
+            )}
                             </Menu>
                         </Box>
                     ) : (
